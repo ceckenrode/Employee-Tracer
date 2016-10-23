@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Card, CardSection, Input, Button } from './common';
+import { Text, StyleSheet } from 'react-native';
+import { Card, CardSection, Input, Button, Spinner } from './common';
 import { emailChanged, passwordChanged, loginUser } from '../actions';
 
 class LoginForm extends Component {
@@ -13,6 +14,7 @@ class LoginForm extends Component {
   render() {
     return (
       <Card>
+
         <CardSection>
           <Input
             value={this.props.email}
@@ -21,6 +23,7 @@ class LoginForm extends Component {
             placeholder="email@gmail.com"
           />
         </CardSection>
+
         <CardSection>
           <Input
             value={this.props.password}
@@ -30,11 +33,15 @@ class LoginForm extends Component {
             placeholder="password"
           />
         </CardSection>
+
+        <Text style={styles.errorTextStyle}>
+          {this.props.error}
+        </Text>
+
         <CardSection>
-          <Button onPress={this.onButtonPress}>
-            Login
-          </Button>
+          {this.renderButton()}
         </CardSection>
+
       </Card>
     );
   }
@@ -48,12 +55,32 @@ class LoginForm extends Component {
     const { email, password } = this.props;
     this.props.loginUser({ email, password });
   }
+  renderButton() {
+    if (!this.props.loading) {
+      return (
+        <Button onPress={this.onButtonPress}>
+          Login
+        </Button>
+      );
+    }
+    return (
+      <Spinner />
+    );
+  }
 }
 
-const mapStateToProps = ({ auth }) => {
-  const { email, password, error } = auth;
+const styles = StyleSheet.create({
+  errorTextStyle: {
+    fontSize: 20,
+    alignSelf: 'center',
+    color: '#FF3B30'
+  }
+});
 
-  return { email, password, error };
+const mapStateToProps = ({ auth }) => {
+  const { email, password, error, loading } = auth;
+
+  return { email, password, error, loading };
 };
 
 export default connect(mapStateToProps, {
